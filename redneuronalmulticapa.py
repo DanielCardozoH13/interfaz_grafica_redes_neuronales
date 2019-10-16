@@ -1,4 +1,5 @@
 import numpy as np
+from time import time
 
 def sigmoide(x):
     return 1/(1 + np.exp(-x))
@@ -39,6 +40,7 @@ class RedNeuronalMulticapa():
         r = 2 * np.random.random((capas[i] + 1, capas[i + 1])) - 1
         self.pesos.append(r)
     def ajuste(self, X, y, factor_aprendizaje = 0.2, epocas = 1000):
+        self.start_time = time()
         ones = np.atleast_2d(np.ones(X.shape[0]))
         X = np.concatenate((ones.T, X), axis = 1)
         
@@ -71,6 +73,7 @@ class RedNeuronalMulticapa():
                 self.pesos[i] += factor_aprendizaje * capa.T.dot(delta)
             
             if k % 10000 == 0: print('epocas:', k)
+        self.elapsed_time = time() - self.start_time
                 
     def predecir(self, x):
         print("------")
@@ -87,3 +90,31 @@ class RedNeuronalMulticapa():
     def obtener_deltas(self):
         return self.deltas    
 
+def main():
+    nn = RedNeuronalMulticapa()
+    estructura_capas = [2,3,2]
+    nn.run(estructura_capas, activacion="tangente")
+    X = np.array([[0,0], #sin obstaculos
+                 [0,1], #sin obstaculos
+                 [0,-1],  #sin obstaculos
+                 [0.5, 1], #obstaculo a la derecha
+                 [0.5, -1], #obstaculo a la izquierda
+                 [1, 1], #demasiado cerca a la derecha
+                 [1,-1]]) #demasiado cerca a la izquierda
+
+    y = np.array([[0,1], #avanzar
+                 [0,1],
+                 [0,1],
+                 [-1,1], #giro izquierda
+                 [1,1], #giro derecha
+                 [0,-1],  #retroceder
+                 [0,-1],]) #retroceder
+
+    nn.ajuste(X, y, factor_aprendizaje = 0.03, epocas = 15000)
+    print('tiempo transcurrido en entrenamiento: {}'.format(nn.elapsed_time))
+
+
+    for index,e in enumerate(X):
+        print("X: ", e, "Y: ", y[index], "red: ", nn.predecir(X))
+if __name__ == '__main__':
+    main()

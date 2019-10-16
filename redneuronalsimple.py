@@ -1,4 +1,6 @@
 from numpy import exp, array, random, dot, append
+from time import time
+
 
 class RedNeuronalSimple():
     def __init__(self):
@@ -12,6 +14,7 @@ class RedNeuronalSimple():
         return x * (1 - x)
     
     def __entrenamiento(self,entradas,salidas,numero_iteraciones):
+        self.start_time = time()
         entradas = array(entradas)
         if type(salidas) is list:
         	salidas = [salidas]
@@ -21,8 +24,8 @@ class RedNeuronalSimple():
             error = salidas - salida
             ajuste = dot(entradas.T, error * self.__sigmoide_derivado(salida))
             self.errores.append(error)
-
             self.pesos_sinapticos += ajuste
+        self.elapsed_time = time() - self.start_time
             
     def prediccion(self,entrada):
         return self.__sigmoide(dot(entrada, self.pesos_sinapticos))
@@ -36,3 +39,18 @@ class RedNeuronalSimple():
 
     def obtener_errores(self):
     	return self.errores
+
+def main():
+    red_neuronal = RedNeuronalSimple()
+    entradas = array([[0,0,1], [1,1,1], [1,0,1], [0,1,1]])
+    salidas = array([[0,1,1,0]]).T
+    # print(salidas)
+    red_neuronal.run(cantidad_entradas = 3, entradas=entradas, salidas=salidas,numero_iteraciones=1)
+    print("tiempo transcurrido en entrenamiento. {}".format(red_neuronal.elapsed_time))
+
+    entrada_prueba = array([1,0,0])
+    print("prediccion para la entrada {} es {}".format(entrada_prueba, red_neuronal.prediccion(entrada_prueba)))
+
+
+if __name__ == '__main__':
+    main()
