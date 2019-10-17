@@ -76,8 +76,6 @@ class RedNeuronalMulticapa():
         self.elapsed_time = time() - self.start_time
                 
     def predecir(self, x):
-        print("------")
-        print(x)
         unos = np.atleast_2d(np.ones(x.shape[0]))
         a = np.concatenate((np.ones(1).T, np.array(x)), axis = 0)
         for l in range(0, len(self.pesos)):
@@ -113,8 +111,9 @@ def main():
     nn.ajuste(X, y, factor_aprendizaje = 0.03, epocas = 15000)
     print('tiempo transcurrido en entrenamiento: {}'.format(nn.elapsed_time))
 
-
-    for index,e in enumerate(X):
-        print("X: ", e, "Y: ", y[index], "red: ", nn.predecir(X))
+    index = 0
+    for e in X:
+        print("X: ", e, "y: ", y[index], "Red: ", nn.predecir(e))
+        index = index + 1
 if __name__ == '__main__':
     main()
