@@ -43,7 +43,6 @@ class RedNeuronalMulticapa():
         self.start_time = time()
         ones = np.atleast_2d(np.ones(X.shape[0]))
         X = np.concatenate((ones.T, X), axis = 1)
-        
         for k in range(epocas):
             i = np.random.randint(X.shape[0])
             a = [X[i]]
@@ -62,7 +61,7 @@ class RedNeuronalMulticapa():
             for l in range(len(a) - 2, 0, -1):
                 deltas.append(deltas[-1].dot(self.pesos[l].T) * self.activacion_prima(a[l]))
             self.deltas.append(deltas)
-            
+                
             #invertir
             deltas.reverse()
             
@@ -76,7 +75,7 @@ class RedNeuronalMulticapa():
         self.elapsed_time = time() - self.start_time
                 
     def predecir(self, x):
-        unos = np.atleast_2d(np.ones(x.shape[0]))
+        #unos = np.atleast_2d(np.ones(x.shape[0]))
         a = np.concatenate((np.ones(1).T, np.array(x)), axis = 0)
         for l in range(0, len(self.pesos)):
             a = self.activacion(np.dot(a, self.pesos[l]))
@@ -90,30 +89,37 @@ class RedNeuronalMulticapa():
 
 def main():
     nn = RedNeuronalMulticapa()
-    estructura_capas = [2,3,2]
-    nn.run(estructura_capas, activacion="tangente")
-    X = np.array([[0,0], #sin obstaculos
-                 [0,1], #sin obstaculos
-                 [0,-1],  #sin obstaculos
-                 [0.5, 1], #obstaculo a la derecha
-                 [0.5, -1], #obstaculo a la izquierda
-                 [1, 1], #demasiado cerca a la derecha
-                 [1,-1]]) #demasiado cerca a la izquierda
+    estructura_capas = [3,3,1]
+    nn.run(estructura_capas, activacion="sigmoide")
+    X = np.array([[0,0,1], #sin obstaculos
+                 [0,0,0], #sin obstaculos
+                 [0,1,1],  #sin obstaculos
+                 [0,1,0], #obstaculo a la derecha
+                 [1,0,1], #obstaculo a la izquierda
+                 [1,0,0],
+                 [1,1,1], 
+                 [1,1,0]]) #demasiado cerca a la izquierda
 
-    y = np.array([[0,1], #avanzar
-                 [0,1],
-                 [0,1],
-                 [-1,1], #giro izquierda
-                 [1,1], #giro derecha
-                 [0,-1],  #retroceder
-                 [0,-1],]) #retroceder
+    y = np.array([[1], #avanzar
+                 [0],
+                 [0],
+                 [1], #giro izquierda
+                 [1], #giro derecha
+                 [1],
+                 [0],  #retroceder
+                 [1],]) #retroceder
 
-    nn.ajuste(X, y, factor_aprendizaje = 0.03, epocas = 15000)
+    nn.ajuste(X, y, factor_aprendizaje = 0.11, epocas = 1000000)
     print('tiempo transcurrido en entrenamiento: {}'.format(nn.elapsed_time))
+    entrada_prueba=np.array([[0,1,0], #sin obstaculos
+                             [0,1,1], #sin obstaculos
+                             [1,1,0],  #sin obstaculos
+                             [1,1,1]])
 
     index = 0
-    for e in X:
+    for e in entrada_prueba:
         print("X: ", e, "y: ", y[index], "Red: ", nn.predecir(e))
         index = index + 1
+        
 if __name__ == '__main__':
     main()

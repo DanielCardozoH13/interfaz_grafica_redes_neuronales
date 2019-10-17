@@ -43,7 +43,6 @@ class Perceptron():
 
 	def __cargar_pesos_sinapticos(self):
 		if type(self.pesos) is int or len(self.pesos) != self.cantidad_entradas:
-			# self.pesos = random.rand(self.cantidad_entradas)
 			self.pesos = 2 * random.random((self.cantidad_entradas,1)) - 1
 			print(len(self.pesos))
 
@@ -83,16 +82,19 @@ def main():
     (array([1,0,1]), 1),
     (array([1,1,1]), 1),
 	]"""
-	epocas = 50000
-	bahias = 0.2
+	epocas = 1000000
+	bahias = 0.5
 	w = random.rand(3)
 	entradas = [
 		(array([0,0,1])),
-    	(array([0,1,1])),
+    	(array([0,0,0])),
+    	(array([0,1,0])),
     	(array([1,0,1])),
+    	(array([1,0,0])),
     	(array([1,1,1])),
+    	(array([1,1,0])),
 	]
-	salidas = [0,1,1,1]
+	salidas = [1,0,0,1,1,1,0,1]
 
 
 	red_perceptron.run(cantidad_entradas=3, pesos=w, bahia = bahias, epocas = epocas, entradas_entrenamiento = entradas, salidas_entrenamiento = salidas)
@@ -103,5 +105,7 @@ def main():
 	print("Entrada {}".format(entrada))
 	print("salida: {}".format(red_perceptron.prediccion(entrada)))
 
+	print("perceptron bahias 0.5 ")
+	pausa = input()
 if __name__ == '__main__':
 	main()
